@@ -12,7 +12,7 @@ import datetime
 import collections
 
 __author__ = "Nick Everett"
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 __license__ = "GNU GPLv3"
 
 
@@ -29,6 +29,7 @@ def _read_ss_csv(input_file):
                 if row['Frames'] is not "" \
                         and row['Frames'] is not "1":
                     return row
+
             for row in filter(_filter_dict_ss, reader):
                 filtered_row = collections.OrderedDict([("Name", row['Name'].split('.')[0]),
                                                         ("Frames", row['Frames']),
@@ -62,7 +63,7 @@ def _read_lto_csv(input_file):
     return filtered_dict, len(filtered_dict)
 
 
-def _compare_dicts(dict1, dict2):
+def _compare_dicts(args, dict1, dict2):
     """
     Compares two given dictionaries, returns quanity of matches, non matches and not found files
     as well as outputting data to the results printer func and csv creator
@@ -70,7 +71,7 @@ def _compare_dicts(dict1, dict2):
     match = 0
     non_match = 0
     not_found = 0
-    args = parse_args()
+    output_file = "/{}/{}".format(args.out_path.strip('/'), args.output_name)
     for row1 in dict1:
         file_found = False
         for row2 in dict2:
@@ -90,11 +91,11 @@ def _compare_dicts(dict1, dict2):
                         non_match += 1
                         match_status = "ERROR"
                         error_message += "** SIZE MISMATCH **\t"
-                _write_csv(args.output_file, row1, row2, match_status, error_message)
+                _write_csv(output_file, row1, row2, match_status, error_message)
                 _results_printer(row1, row2, match_status, error_message)
         if file_found is False:
             not_found += 1
-            _write_csv(args.output_file, row1, None, "ERROR", "** FILE NOT FOUND **")
+            _write_csv(output_file, row1, None, "ERROR", "** FILE NOT FOUND **")
             _results_printer(row1, None, "ERROR", "** FILE NOT FOUND **")
     return match, non_match, not_found
 
@@ -104,7 +105,8 @@ first_write = True
 
 def _write_csv(output_filepath, row1, row2, match_status, error_message):
     global first_write
-    with open(output_filepath, 'a+', newline='') as f:
+    print(output_filepath)
+    with open(output_filepath, 'w+') as f:
         fieldnames = ["STATUS",
                       "FILENAME",
                       "FRAMES_MASTER",
@@ -204,16 +206,17 @@ def parse_args():
     description = (
         'Command line interface tool to compare a master csv with an LTO csv'
         '- https://github.com/nickever/lto_check')
-    parser = argparse.ArgumentParser(description=description, usage='%(prog)s [-h] [-o] [-v] [--version] '
+    parser = argparse.ArgumentParser(description=description, usage='%(prog)s [-h] [-o] [-d] [-v] [--version] '
                                                                     'master_csv_path  LTO_csv_path')
-
     parser.add_argument("master_csv_path", type=str,
                         help="master csv input file path (required)")
     parser.add_argument("LTO_csv_path", type=str,
                         help="LTO csv input file path (required)")
+    parser.add_argument("-d", "--out_path", action="store", default='.',
+                        help="output destination path", metavar='')
     out_filename = "lto_check_report_{:%Y-%m-%d_%H%M}.csv".format(datetime.datetime.today())
-    parser.add_argument("-o", "--output_file", action="store", default=out_filename,
-                        help="output file path", metavar='')
+    parser.add_argument("-o", "--output_name", action="store", default=out_filename,
+                        help="output filename", metavar='')
     parser.add_argument(
         "-v",
         "--verbose",
@@ -224,8 +227,7 @@ def parse_args():
         "--version",
         action="version",
         version="{} (version {})".format("%(prog)s", __version__))
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 def main():
@@ -235,7 +237,7 @@ def main():
     try:
         master_media_files, count_mmf = _read_ss_csv(csv1)
         lto_media_files, count_lmf = _read_lto_csv(csv2)
-        files_matched, files_non_matched, files_not_found = _compare_dicts(master_media_files, lto_media_files)
+        files_matched, files_non_matched, files_not_found = _compare_dicts(args, master_media_files, lto_media_files)
         _summary_printer(count_mmf, count_lmf, files_matched, files_non_matched, files_not_found)
     except KeyboardInterrupt:
         sys.exit("Exiting...")
