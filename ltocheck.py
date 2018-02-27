@@ -122,25 +122,21 @@ def _write_csv(output_filepath, ss_row, lto_row, match_status, error_message):
                 first_write = False
             else:
                 pass
-            if ss_row['Name'] not in f2.read():
-                if lto_row is not None:
-                    writer.writerow({'STATUS': match_status,
-                                     'FILENAME': ss_row['Name'],
-                                     'FRAMES_MASTER': ss_row['Frames'],
-                                     'FRAMES_LTO': lto_row['Frames'],
-                                     'SIZE_MASTER': ss_row['Size'],
-                                     'SIZE_LTO': lto_row['Size'],
-                                     'LTO_TAPE': lto_row['Media'],
-                                     'ERROR MESSAGES': error_message})
-                else:
-                    writer.writerow({'STATUS': match_status,
-                                     'FILENAME': ss_row['Name'],
-                                     'FRAMES_MASTER': ss_row['Frames'],
-                                     'SIZE_MASTER': ss_row['Size'],
-                                     'ERROR MESSAGES': error_message})
+            if lto_row is not None:
+                writer.writerow({'STATUS': match_status,
+                                 'FILENAME': ss_row['Name'],
+                                 'FRAMES_MASTER': ss_row['Frames'],
+                                 'FRAMES_LTO': lto_row['Frames'],
+                                 'SIZE_MASTER': ss_row['Size'],
+                                 'SIZE_LTO': lto_row['Size'],
+                                 'LTO_TAPE': lto_row['Media'],
+                                 'ERROR MESSAGES': error_message})
             else:
-                pass
-                #print("{} already in file".format(lto_row['Name']))
+                writer.writerow({'STATUS': match_status,
+                                 'FILENAME': ss_row['Name'],
+                                 'FRAMES_MASTER': ss_row['Frames'],
+                                 'SIZE_MASTER': ss_row['Size'],
+                                 'ERROR MESSAGES': error_message})
     f.close()
 
 
