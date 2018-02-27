@@ -12,7 +12,7 @@ import datetime
 import collections
 
 __author__ = "Nick Everett"
-__version__ = "0.5.2"
+__version__ = "0.5.3"
 __license__ = "GNU GPLv3"
 
 
