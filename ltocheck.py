@@ -10,7 +10,6 @@ import sys
 import argparse
 import datetime
 import collections
-from collections import OrderedDict
 
 __author__ = "Nick Everett"
 __version__ = "0.5.2"
@@ -22,20 +21,20 @@ def _read_ss_csv(input_file):
     Opens a SS csv as a dictionary with header as key, sorts by given column key, outputs filtered dictionary
     """
     with open(input_file, 'r') as f:
-            reader = csv.DictReader(f)
-            reader = sorted(reader, key=lambda row: row['Name'])
-            filtered_dict = []
+        reader = csv.DictReader(f)
+        reader = sorted(reader, key=lambda row: row['Name'])
+        filtered_dict = []
 
-            def _filter_dict_ss(row):
-                if row['Frames'] is not "" \
-                        and row['Frames'] is not "1":
-                    return row
+        def _filter_dict_ss(row):
+            if row['Frames'] is not "" \
+                    and row['Frames'] is not "1":
+                return row
 
-            for row in filter(_filter_dict_ss, reader):
-                filtered_row = collections.OrderedDict([("Name", row['Name'].split('.')[0]),
-                                                        ("Frames", row['Frames']),
-                                                        ("Size", row['File Size'])])
-                filtered_dict.append(filtered_row)
+        for row in filter(_filter_dict_ss, reader):
+            filtered_row = collections.OrderedDict([("Name", row['Name'].split('.')[0]),
+                                                    ("Frames", row['Frames']),
+                                                    ("Size", row['File Size'])])
+            filtered_dict.append(filtered_row)
     f.close()
     return filtered_dict, len(filtered_dict)
 
@@ -54,6 +53,7 @@ def _read_lto_csv(input_file):
                     and row['Frames'] is not "" \
                     and row['Frames'] is not "1":
                 return row
+
         for row in filter(_filter_dict_lto, reader):
             filtered_row = collections.OrderedDict([("Name", row['Name'].split('.')[0]),
                                                     ("Frames", row['Frames']),
@@ -64,7 +64,7 @@ def _read_lto_csv(input_file):
     return filtered_dict, len(filtered_dict)
 
 
-def _compare_dicts(args, dict1, dict2):
+def _compare_dicts(args, ss_dict, lto_dict):
     """
     Compares two given dictionaries, returns quanity of matches, non matches and not found files
     as well as outputting data to the results printer func and csv creator
@@ -73,83 +73,87 @@ def _compare_dicts(args, dict1, dict2):
     non_match = 0
     not_found = 0
     output_file = "{}/{}".format(args.out_path.strip('/'), args.out_name)
-    for row1 in dict1:
+    for ss_row in ss_dict:
         file_found = False
-        for row2 in dict2:
-            if row1['Name'] in row2['Name']:
+        for lto_row in lto_dict:
+            if ss_row['Name'] in lto_row['Name']:
                 file_found = True
                 match_status = ""
                 error_message = ""
-                if row1["Frames"] in row2["Frames"] and row1["Size"] in row2["Size"]:
+                if ss_row["Frames"] in lto_row["Frames"] and ss_row["Size"] in lto_row["Size"]:
                     match += 1
                     match_status = "MATCH"
                 else:
-                    if row1["Frames"] not in row2["Frames"]:
+                    if ss_row["Frames"] not in lto_row["Frames"]:
                         non_match += 1
                         match_status = "ERROR"
                         error_message += "FRAME COUNT MISMATCH \t"
-                    if row1["Size"] not in row2["Size"]:
+                    if ss_row["Size"] not in lto_row["Size"]:
                         non_match += 1
                         match_status = "ERROR"
                         error_message += "SIZE MISMATCH \t"
-                _write_csv(output_file, row1, row2, match_status, error_message)
-                _results_printer(row1, row2, match_status, error_message)
+                _write_csv(output_file, ss_row, lto_row, match_status, error_message)
+                _results_printer(ss_row, lto_row, match_status, error_message)
         if file_found is False:
             not_found += 1
-            _write_csv(output_file, row1, None, "ERROR", "FILE NOT FOUND ")
-            _results_printer(row1, None, "ERROR", "FILE NOT FOUND ")
+            _write_csv(output_file, ss_row, None, "ERROR", "FILE NOT FOUND ")
+            _results_printer(ss_row, None, "ERROR", "FILE NOT FOUND ")
     return match, non_match, not_found
 
 
 first_write = True
 
 
-def _write_csv(output_filepath, row1, row2, match_status, error_message):
+def _write_csv(output_filepath, ss_row, lto_row, match_status, error_message):
     global first_write
     with open(output_filepath, 'a+') as f:
-        fieldnames = ["STATUS",
-                      "FILENAME",
-                      "FRAMES_MASTER",
-                      "FRAMES_LTO",
-                      "SIZE_MASTER",
-                      "SIZE_LTO",
-                      "LTO_TAPE",
-                      "ERROR MESSAGES",]
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        if first_write is True:
-            writer.writeheader()
-            first_write = False
-            pass
-        else:
-            pass
-        if row2 is not None:
-            writer.writerow({'STATUS': match_status,
-                             'FILENAME': row1['Name'],
-                             'FRAMES_MASTER': row1['Frames'],
-                             'FRAMES_LTO': row2['Frames'],
-                             'SIZE_MASTER': row1['Size'],
-                             'SIZE_LTO': row2['Size'],
-                             'LTO_TAPE': row2['Media'],
-                             'ERROR MESSAGES': error_message})
-        else:
-            writer.writerow({'STATUS': match_status,
-                             'FILENAME': row1['Name'],
-                             'FRAMES_MASTER': row1['Frames'],
-                             'SIZE_MASTER': row1['Size'],
-                             'ERROR MESSAGES': error_message})
+        with open(output_filepath, 'r') as f2:
+            fieldnames = ["STATUS",
+                          "FILENAME",
+                          "FRAMES_MASTER",
+                          "FRAMES_LTO",
+                          "SIZE_MASTER",
+                          "SIZE_LTO",
+                          "LTO_TAPE",
+                          "ERROR MESSAGES"]
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            if first_write is True:
+                writer.writeheader()
+                first_write = False
+            else:
+                pass
+            if ss_row['Name'] not in f2.read():
+                if lto_row is not None:
+                    writer.writerow({'STATUS': match_status,
+                                     'FILENAME': ss_row['Name'],
+                                     'FRAMES_MASTER': ss_row['Frames'],
+                                     'FRAMES_LTO': lto_row['Frames'],
+                                     'SIZE_MASTER': ss_row['Size'],
+                                     'SIZE_LTO': lto_row['Size'],
+                                     'LTO_TAPE': lto_row['Media'],
+                                     'ERROR MESSAGES': error_message})
+                else:
+                    writer.writerow({'STATUS': match_status,
+                                     'FILENAME': ss_row['Name'],
+                                     'FRAMES_MASTER': ss_row['Frames'],
+                                     'SIZE_MASTER': ss_row['Size'],
+                                     'ERROR MESSAGES': error_message})
+            else:
+                pass
+                #print("{} already in file".format(lto_row['Name']))
     f.close()
 
 
 first_print = True
 
 
-def _results_printer(row1, row2, match_status, error_message):
+def _results_printer(ss_row, lto_row, match_status, error_message):
     """
     Prints data to terminal provided by the compare_dicts function
     """
     global first_print
     if first_print is True:
-        print("\n\t{: ^6} | {: ^24} {: ^15} {: ^15} {: ^14} {: ^14} {: ^8}  |\n"
+        _vprint("\n\t{: ^6} | {: ^24} {: ^15} {: ^15} {: ^14} {: ^14} {: ^8}  |\n"
               "\t       |{: ^98}|"
               .format("STATUS",
                       "FILENAME",
@@ -163,26 +167,26 @@ def _results_printer(row1, row2, match_status, error_message):
         pass
     else:
         pass
-    if row2 is not None:
-        print("\t{: ^6} | {: ^24} {: ^15} {: ^15} {: ^14} {: ^14} {: ^8}  |\t {}\n"
+    if lto_row is not None:
+        _vprint("\t{: ^6} | {: ^24} {: ^15} {: ^15} {: ^14} {: ^14} {: ^8}  |\t {}\n"
               "\t       |{: ^98}|"
               .format(match_status,
-                      row1['Name'],
-                      row1['Frames'],
-                      row2['Frames'],
-                      row1['Size'],
-                      row2['Size'],
-                      row2['Media'],
+                      ss_row['Name'],
+                      ss_row['Frames'],
+                      lto_row['Frames'],
+                      ss_row['Size'],
+                      lto_row['Size'],
+                      lto_row['Media'],
                       error_message,
                       " "))
     else:
-        print("\t{: ^6} | {: ^24} {: ^15} {: ^15} {: ^14} {: ^14} {: ^8}  |\t {}\n"
+        _vprint("\t{: ^6} | {: ^24} {: ^15} {: ^15} {: ^14} {: ^14} {: ^8}  |\t {}\n"
               "\t       |{: ^98}|"
               .format(match_status,
-                      row1['Name'],
-                      row1['Frames'],
+                      ss_row['Name'],
+                      ss_row['Frames'],
                       " ",
-                      row1['Size'],
+                      ss_row['Size'],
                       " ",
                       " ",
                       error_message,
@@ -220,9 +224,9 @@ def parse_args():
     parser.add_argument(
         "-v",
         "--verbose",
-        action="count",
-        default=0,
-        help="verbosity (-v, -vv, etc)")
+        action="store_true",
+        default=False,
+        help="verbosity")
     parser.add_argument(
         "--version",
         action="version",
@@ -230,10 +234,19 @@ def parse_args():
     return parser.parse_args()
 
 
+if parse_args().verbose:
+    def _vprint(*args, **kwargs):
+        print(*args, **kwargs)
+else:
+    _vprint = lambda *a, **k: None
+
+
 def main():
     args = parse_args()
+
     csv1 = args.master_csv_path
     csv2 = args.LTO_csv_path
+
     try:
         master_media_files, count_mmf = _read_ss_csv(csv1)
         lto_media_files, count_lmf = _read_lto_csv(csv2)
