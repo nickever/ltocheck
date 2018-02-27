@@ -10,9 +10,10 @@ import sys
 import argparse
 import datetime
 import collections
+from collections import OrderedDict
 
 __author__ = "Nick Everett"
-__version__ = "0.5.1"
+__version__ = "0.5.2"
 __license__ = "GNU GPLv3"
 
 
@@ -71,7 +72,7 @@ def _compare_dicts(args, dict1, dict2):
     match = 0
     non_match = 0
     not_found = 0
-    output_file = "/{}/{}".format(args.out_path.strip('/'), args.output_name)
+    output_file = "{}/{}".format(args.out_path.strip('/'), args.out_name)
     for row1 in dict1:
         file_found = False
         for row2 in dict2:
@@ -86,17 +87,17 @@ def _compare_dicts(args, dict1, dict2):
                     if row1["Frames"] not in row2["Frames"]:
                         non_match += 1
                         match_status = "ERROR"
-                        error_message += "** FRAME COUNT MISMATCH **\t"
+                        error_message += "FRAME COUNT MISMATCH \t"
                     if row1["Size"] not in row2["Size"]:
                         non_match += 1
                         match_status = "ERROR"
-                        error_message += "** SIZE MISMATCH **\t"
+                        error_message += "SIZE MISMATCH \t"
                 _write_csv(output_file, row1, row2, match_status, error_message)
                 _results_printer(row1, row2, match_status, error_message)
         if file_found is False:
             not_found += 1
-            _write_csv(output_file, row1, None, "ERROR", "** FILE NOT FOUND **")
-            _results_printer(row1, None, "ERROR", "** FILE NOT FOUND **")
+            _write_csv(output_file, row1, None, "ERROR", "FILE NOT FOUND ")
+            _results_printer(row1, None, "ERROR", "FILE NOT FOUND ")
     return match, non_match, not_found
 
 
@@ -105,8 +106,7 @@ first_write = True
 
 def _write_csv(output_filepath, row1, row2, match_status, error_message):
     global first_write
-    print(output_filepath)
-    with open(output_filepath, 'w+') as f:
+    with open(output_filepath, 'a+') as f:
         fieldnames = ["STATUS",
                       "FILENAME",
                       "FRAMES_MASTER",
@@ -193,7 +193,7 @@ def _summary_printer(int1, int2, int3, int4, int5):
     print("\nTotal Video Files on Master: {}"
           "\nTotal Video Files on LTO: {}"
           "\nMatches: {}"
-          "\nNon-Matchs: {}"
+          "\nNon-Matches: {}"
           "\nNot Found: {}"
           .format(int1, int2, int3, int4, int5))
 
@@ -215,7 +215,7 @@ def parse_args():
     parser.add_argument("-d", "--out_path", action="store", default='.',
                         help="output destination path", metavar='')
     out_filename = "lto_check_report_{:%Y-%m-%d_%H%M}.csv".format(datetime.datetime.today())
-    parser.add_argument("-o", "--output_name", action="store", default=out_filename,
+    parser.add_argument("-o", "--out_name", action="store", default=out_filename,
                         help="output filename", metavar='')
     parser.add_argument(
         "-v",
