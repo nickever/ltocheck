@@ -47,13 +47,14 @@ setup(
     long_description=long_description,
     keywords='ltocheck csv lto tape compare',
     py_modules=['ltocheck'],
-    entry_points={  # Optional
+    entry_points={
         'console_scripts': [
             'ltocheck=ltocheck:main',
         ],
     },
     platforms='macOS',
-    classifiers = [
+    install_requires=['google-api-python-client'],
+    classifiers=[
         'Programming Language :: Python',
         'Development Status :: 3 - Alpha',
         'Natural Language :: English',

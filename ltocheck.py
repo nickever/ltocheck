@@ -12,7 +12,7 @@ import datetime
 import collections
 
 __author__ = "Nick Everett"
-__version__ = "0.5.3"
+__version__ = "0.5.3.5"
 __license__ = "GNU GPLv3"
 
 
@@ -64,7 +64,7 @@ def _read_lto_csv(input_file):
     return filtered_dict, len(filtered_dict)
 
 
-def _compare_dicts(args, ss_dict, lto_dict):
+def _compare_dicts(args, ss_dict, lto_dict, verbose):
     """
     Compares two given dictionaries, returns quanity of matches, non matches and not found files
     as well as outputting data to the results printer func and csv creator
@@ -93,11 +93,11 @@ def _compare_dicts(args, ss_dict, lto_dict):
                         match_status = "ERROR"
                         error_message += "SIZE MISMATCH \t"
                 _write_csv(output_file, ss_row, lto_row, match_status, error_message)
-                _results_printer(ss_row, lto_row, match_status, error_message)
+                _results_printer(ss_row, lto_row, match_status, error_message, verbose)
         if file_found is False:
             not_found += 1
             _write_csv(output_file, ss_row, None, "ERROR", "FILE NOT FOUND ")
-            _results_printer(ss_row, None, "ERROR", "FILE NOT FOUND ")
+            _results_printer(ss_row, None, "ERROR", "FILE NOT FOUND ", verbose)
     return match, non_match, not_found
 
 
@@ -107,86 +107,86 @@ first_write = True
 def _write_csv(output_filepath, ss_row, lto_row, match_status, error_message):
     global first_write
     with open(output_filepath, 'a+') as f:
-        with open(output_filepath, 'r') as f2:
-            fieldnames = ["STATUS",
-                          "FILENAME",
-                          "FRAMES_MASTER",
-                          "FRAMES_LTO",
-                          "SIZE_MASTER",
-                          "SIZE_LTO",
-                          "LTO_TAPE",
-                          "ERROR MESSAGES"]
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            if first_write is True:
-                writer.writeheader()
-                first_write = False
-            else:
-                pass
-            if lto_row is not None:
-                writer.writerow({'STATUS': match_status,
-                                 'FILENAME': ss_row['Name'],
-                                 'FRAMES_MASTER': ss_row['Frames'],
-                                 'FRAMES_LTO': lto_row['Frames'],
-                                 'SIZE_MASTER': ss_row['Size'],
-                                 'SIZE_LTO': lto_row['Size'],
-                                 'LTO_TAPE': lto_row['Media'],
-                                 'ERROR MESSAGES': error_message})
-            else:
-                writer.writerow({'STATUS': match_status,
-                                 'FILENAME': ss_row['Name'],
-                                 'FRAMES_MASTER': ss_row['Frames'],
-                                 'SIZE_MASTER': ss_row['Size'],
-                                 'ERROR MESSAGES': error_message})
-    f.close()
-
-
-first_print = True
-
-
-def _results_printer(ss_row, lto_row, match_status, error_message):
-    """
-    Prints data to terminal provided by the compare_dicts function
-    """
-    global first_print
-    if first_print is True:
-        _vprint("\n\t{: ^6} | {: ^24} {: ^15} {: ^15} {: ^14} {: ^14} {: ^8}  |\n"
-              "\t       |{: ^98}|"
-              .format("STATUS",
+        fieldnames = ["STATUS",
                       "FILENAME",
                       "FRAMES_MASTER",
                       "FRAMES_LTO",
                       "SIZE_MASTER",
                       "SIZE_LTO",
                       "LTO_TAPE",
-                      " "))
-        first_print = False
-        pass
-    else:
-        pass
-    if lto_row is not None:
-        _vprint("\t{: ^6} | {: ^24} {: ^15} {: ^15} {: ^14} {: ^14} {: ^8}  |\t {}\n"
-              "\t       |{: ^98}|"
-              .format(match_status,
-                      ss_row['Name'],
-                      ss_row['Frames'],
-                      lto_row['Frames'],
-                      ss_row['Size'],
-                      lto_row['Size'],
-                      lto_row['Media'],
-                      error_message,
-                      " "))
-    else:
-        _vprint("\t{: ^6} | {: ^24} {: ^15} {: ^15} {: ^14} {: ^14} {: ^8}  |\t {}\n"
-              "\t       |{: ^98}|"
-              .format(match_status,
-                      ss_row['Name'],
-                      ss_row['Frames'],
-                      " ",
-                      ss_row['Size'],
-                      " ",
-                      " ",
-                      error_message,
-                      " "))
+                      "ERROR MESSAGES"]
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        if first_write is True:
+            writer.writeheader()
+            first_write = False
+        else:
+            pass
+        if lto_row is not None:
+            writer.writerow({'STATUS': match_status,
+                             'FILENAME': ss_row['Name'],
+                             'FRAMES_MASTER': ss_row['Frames'],
+                             'FRAMES_LTO': lto_row['Frames'],
+                             'SIZE_MASTER': ss_row['Size'],
+                             'SIZE_LTO': lto_row['Size'],
+                             'LTO_TAPE': lto_row['Media'],
+                             'ERROR MESSAGES': error_message})
+        else:
+            writer.writerow({'STATUS': match_status,
+                             'FILENAME': ss_row['Name'],
+                             'FRAMES_MASTER': ss_row['Frames'],
+                             'SIZE_MASTER': ss_row['Size'],
+                             'ERROR MESSAGES': error_message})
+    f.close()
+
+
+first_print = True
+
+
+def _results_printer(ss_row, lto_row, match_status, error_message, verbose=False):
+    """
+    Prints data to terminal provided by the compare_dicts function
+    """
+    if verbose is True:
+        global first_print
+        if first_print is True:
+            print("\n\t{: ^6} | {: ^24} {: ^15} {: ^15} {: ^14} {: ^14} {: ^8}  |\n"
+                    "\t       |{: ^98}|"
+                    .format("STATUS",
+                            "FILENAME",
+                            "FRAMES_MASTER",
+                            "FRAMES_LTO",
+                            "SIZE_MASTER",
+                            "SIZE_LTO",
+                            "LTO_TAPE",
+                            " "))
+            first_print = False
+            pass
+        else:
+            pass
+        if lto_row is not None:
+            print("\t{: ^6} | {: ^24} {: ^15} {: ^15} {: ^14} {: ^14} {: ^8}  |\t {}\n"
+                    "\t       |{: ^98}|"
+                    .format(match_status,
+                            ss_row['Name'],
+                            ss_row['Frames'],
+                            lto_row['Frames'],
+                            ss_row['Size'],
+                            lto_row['Size'],
+                            lto_row['Media'],
+                            error_message,
+                            " "))
+        else:
+            print("\t{: ^6} | {: ^24} {: ^15} {: ^15} {: ^14} {: ^14} {: ^8}  |\t {}\n"
+                    "\t       |{: ^98}|"
+                    .format(match_status,
+                            ss_row['Name'],
+                            ss_row['Frames'],
+                            " ",
+                            ss_row['Size'],
+                            " ",
+                            " ",
+                            error_message,
+                            " "))
 
 
 def _summary_printer(int1, int2, int3, int4, int5):
@@ -203,50 +203,48 @@ def parse_args():
     Command line arguments: the tool takes two compulsory arguments as strings (csv file paths in order master/lto),
     an optional output file path.
     """
+    out_filename = "lto_check_report_{:%Y-%m-%d_%H%M}.csv".format(datetime.datetime.today())
+
     description = (
         'Command line interface tool to compare a master csv with an LTO csv'
-        '- https://github.com/nickever/lto_check')
-    parser = argparse.ArgumentParser(description=description, usage='%(prog)s [-h] [-o] [-d] [-v] [--version] '
-                                                                    'master_csv_path  LTO_csv_path')
+        '\nhttps://github.com/nickever/lto_check')
+
+    parser = argparse.ArgumentParser(description=description)
+
     parser.add_argument("master_csv_path", type=str,
                         help="master csv input file path (required)")
-    parser.add_argument("LTO_csv_path", type=str,
+    parser.add_argument("lto_csv_path", type=str,
                         help="LTO csv input file path (required)")
-    parser.add_argument("-d", "--out_path", action="store", default='.',
-                        help="output destination path", metavar='')
-    out_filename = "lto_check_report_{:%Y-%m-%d_%H%M}.csv".format(datetime.datetime.today())
+    parser.add_argument("-c", "--out_path", action="store", default='.',
+                        help="output destination path")
     parser.add_argument("-o", "--out_name", action="store", default=out_filename,
-                        help="output filename", metavar='')
+                        help="output filename")
     parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
-        default=False,
-        help="verbosity")
+        help="verbosity (-v)")
     parser.add_argument(
         "--version",
         action="version",
         version="{} (version {})".format("%(prog)s", __version__))
-    return parser.parse_args()
-
-
-if parse_args().verbose:
-    def _vprint(*args, **kwargs):
-        print(*args, **kwargs)
-else:
-    _vprint = lambda *a, **k: None
+    args = parser.parse_args()
+    return args
 
 
 def main():
     args = parse_args()
-
+    if args.verbose:
+        verbose = True
+    else:
+        verbose = False
     csv1 = args.master_csv_path
-    csv2 = args.LTO_csv_path
-
+    csv2 = args.lto_csv_path
     try:
         master_media_files, count_mmf = _read_ss_csv(csv1)
         lto_media_files, count_lmf = _read_lto_csv(csv2)
-        files_matched, files_non_matched, files_not_found = _compare_dicts(args, master_media_files, lto_media_files)
+        files_matched, files_non_matched, files_not_found = _compare_dicts(args, master_media_files,
+                                                                           lto_media_files, verbose)
         _summary_printer(count_mmf, count_lmf, files_matched, files_non_matched, files_not_found)
     except KeyboardInterrupt:
         sys.exit("Exiting...")
