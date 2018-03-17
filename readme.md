@@ -25,14 +25,14 @@ $ pip list
 
 ### Usage
 
-LTO Check has a command-line interface (CLI). The ltocheck command takes two required arguments; first, a master csv file listing all the files on the master source media, and secondly, an lto csv file listing all the files on the lto tape. 
+LTO Check has a command-line interface (CLI). The ltocheck command takes two required arguments; first, the path to a master csv file listing all the files on the master source media, and secondly, the path to an lto csv file listing all the files on the lto tape. 
 
 ```
 $ ltocheck ~/path/to/master.csv ~/path/to/lto.csv
 ```
 The tool will compare file name, size, frame count and MD5 hash for all files present on the master csv, compared to the lto csv and output a list and count of any missing files or mis-matched files. 
 
-The tool has three more optional arguements to choose the output name (-o) and filepath (-d) of the output csv report as well as a verbose (-v) option for verbose output to terminal.
+The tool has three more optional arguements; '-o' to choose the output name and '-d' to chose the output filepath of the output csv report as well as a verbose (-v) option for verbose output to terminal.
 
 ```
 $ ltocheck ~/path/to/master.csv ~/path/to/lto.csv -d ~/path/to/reportout/ -o report.csv 
