@@ -215,7 +215,7 @@ def parse_args():
                         help="master csv input file path (required)")
     parser.add_argument("lto_csv_path", type=str,
                         help="LTO csv input file path (required)")
-    parser.add_argument("-c", "--out_path", action="store", default='.',
+    parser.add_argument("-d", "--out_path", action="store", default='.',
                         help="output destination path")
     parser.add_argument("-o", "--out_name", action="store", default=out_filename,
                         help="output filename")
