@@ -35,7 +35,7 @@ The tool will compare file name, size, frame count and MD5 hash for all files pr
 The tool has three more optional arguements to choose the output name (-o) and filepath (-d) of the output csv report as well as a verbose (-v) option for verbose output to terminal.
 
 ```
-$ $ ltocheck ~/path/to/master.csv ~/path/to/lto.csv -d ~/path/to/reportout/ -o report.csv 
+$ ltocheck ~/path/to/master.csv ~/path/to/lto.csv -d ~/path/to/reportout/ -o report.csv 
 ```
 
 
