@@ -17,7 +17,7 @@ under the License.
 
 import io
 import os
-import ltocheck
+import main
 from setuptools import setup, find_packages
 
 
@@ -38,7 +38,7 @@ long_description = read('README.md')
 
 setup(
     name='ltocheck',
-    version=ltocheck.__version__,
+    version=main.__version__,
     url='https://github.com/nickever/ltocheck_gui',
     license='GNU General Public License v3.0',
     author='Nick Everett',
@@ -49,7 +49,7 @@ setup(
     py_modules=['ltocheck'],
     entry_points={
         'console_scripts': [
-            'ltocheck=ltocheck:main',
+            'ltocheck=main:main',
         ],
     },
     platforms='macOS',
