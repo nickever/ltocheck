@@ -5,8 +5,6 @@ Compares the file size, frame count and MD5 Hash for every video file listed in 
 
 ## Getting Started
 
-
-
 ### Prerequisites
 
 Requires Python 3.6+
@@ -47,13 +45,25 @@ This tool can be used with either the GUI or CLI as preferred.
 
 To access the GUI, run $ ltocheck without args from terminal.
 
+The tool opens with the following display:
+
 ![ltocheck1](https://github.com/nickever/ltocheck/blob/master/img/ltocheck1.png)
+
+
+Click the '...' buttons to add a master and lto csv. A file dialog will pop up.
 
 ![ltocheck2](https://github.com/nickever/ltocheck/blob/master/img/ltocheck2.png)
 
+
+Then click 'Check' to check the lto csv against the master. The results will be displayed below.
+
 ![ltocheck3](https://github.com/nickever/ltocheck/blob/master/img/ltocheck3.png)
 
+Finally, save the report using the 'Save Report' button. It will look as follows:
+
 ![ltocheck4](https://github.com/nickever/ltocheck/blob/master/img/ltocheck4.png)
+
+
 
 ### CLI
 
