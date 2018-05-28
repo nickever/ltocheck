@@ -17,17 +17,6 @@ else
     brew update
 fi
 
-# Install rsync 3.x (default with macOS is 2.6.9)
-echo "Rsync..."
-which -s /usr/local/bin/rsync
-if [[ $? != 0 ]] ; then
-    echo "...installing"
-    brew install rsync
-else
-    echo "...already installed, updating"
-    brew upgrade rsync
-fi
-
 # Install python 3.x (default with macOS is 2.6.9)
 echo "Python..."
 which -s /usr/local/bin/python
@@ -44,7 +33,7 @@ echo "ltocheck..."
 which -s /usr/local/bin/ltocheck
 if [[ $? != 0 ]] ; then
     echo "...installing"
-    pip3 install -e "${DIR}"
+    pip3 install -e "${DIR}" || pip install -e "${DIR}"
 else
     echo "...already installed"
 fi

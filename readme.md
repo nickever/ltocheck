@@ -1,54 +1,83 @@
 # LTO Check
 
-CLI tool to compare a master csv to an LTO csv. Compares file size, frame quantity and MD5 Hash.
+Command line interface and GUI tool to compare a master csv to an LTO csv.
+Compares the file size, frame count and MD5 Hash for every video file listed in the master csv.
 
 ## Getting Started
 
+
+
 ### Prerequisites
 
-* Python 3.4+
-* Works on Linux or Mac OSX
+Requires Python 3.6+
+
+To install python 3.6, use Homebrew.
+
+Install Homebrew:
+```
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+Install Python 3.6+:
+```
+$ brew install python
+```
 
 ### Installing
 
-LTO Check can be installed from the PyPi package with the pip command:
+There are two methods to install this package. The simple method is to run the 'package_installer.sh' 
+file included in the package, which will check for and then if needed install Homebrew, Python3 and the ltocheck
+package. To execute the package installer use:
 
 ```
-$ sudo pip install ltocheck
+$ /PATH/TO/package_installer.sh
 ```
 
-To check which version you are running, or that it has installed correctly use:
+Alternatively, install the prerequisites listed above and then install ltocheck as a local python3 pip package:
 
 ```
-$ pip list 
+$ pip3 install -e /PATH/TO/ltocheck/
 ```
 
-### Usage
+## Usage
 
-LTO Check has a command-line interface (CLI). The ltocheck command takes two required arguments; first, the path to a master csv file listing all the files on the master source media, and secondly, the path to an lto csv file listing all the files on the lto tape. 
+This tool can be used with either the GUI or CLI as preferred.  
+
+### GUI
+
+To access the GUI, run $ ltocheck without args from terminal.
+
+### CLI
+
+To access the CLI, run $ ltocheck with two required positional args, plus any optional args:
 
 ```
-$ ltocheck ~/path/to/master.csv ~/path/to/lto.csv
-```
-The tool will compare file name, size, frame count and MD5 hash for all files present on the master csv, compared to the lto csv and output a list and count of any missing files or mis-matched files. 
-
-The tool has three more optional arguements; '-o' to choose the output name and '-d' to chose the output filepath of the output csv report as well as a verbose (-v) option for verbose output to terminal.
-
-```
-$ ltocheck ~/path/to/master.csv ~/path/to/lto.csv -d ~/path/to/reportout/ -o report.csv 
+$ ltocheck -m [master_csv_path] -l [lto_csv_path] 
 ```
 
+Args:
 
-## Authors
+```
+usage: ltocheck [-h] [-m MASTER_CSV_PATH] [-l LTO_CSV_PATH] [-d OUT_PATH]
+                [-o OUT_NAME] [-v] [--version]
 
-* **Nick Everett** - *Initial work* - [NickEver](https://github.com/nickever)
+Command line interface tool to compare a master csv with an LTO csv
+https://github.com/nickever/lto_check
 
-See also the list of [contributors](https://github.com/nickever/ltocheck/contributors) who participated in this project.
+optional arguments:
+  -h, --help            show this help message and exit
+  -m MASTER_CSV_PATH, --master_csv_path MASTER_CSV_PATH
+                        master csv input file path (required)
+  -l LTO_CSV_PATH, --lto_csv_path LTO_CSV_PATH
+                        LTO csv input file path (required)
+  -d OUT_PATH, --out_path OUT_PATH
+                        output destination path
+  -o OUT_NAME, --out_name OUT_NAME
+                        output filename
+  -v, --verbose         verbosity (-v) or debug mode (-vv)
+  --version             show program's version number and exit
+```
 
 ## License
 
-This project is licensed under the GNU v3.0 License - see the [LICENSE](LICENSE) file for details
-
-## Acknowledgments
-
-* Thanks to Josh & Mike at Mission Digital
+This project is licensed under the GNU GPLv3 License - see the [LICENSE](LICENSE) file for details
