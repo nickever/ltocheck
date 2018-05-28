@@ -34,12 +34,12 @@ def read(*filenames, **kwargs):
     return sep.join(buf)
 
 
-long_description = read('README.rst')
+long_description = read('README.md')
 
 setup(
     name='ltocheck',
     version=ltocheck.__version__,
-    url='https://github.com/nickever/ltocheck',
+    url='https://github.com/nickever/ltocheck_gui',
     license='GNU General Public License v3.0',
     author='Nick Everett',
     author_email='njeverett@gmail.com',
@@ -53,7 +53,7 @@ setup(
         ],
     },
     platforms='macOS',
-    install_requires=['google-api-python-client'],
+    install_requires=[],
     classifiers=[
         'Programming Language :: Python',
         'Development Status :: 3 - Alpha',

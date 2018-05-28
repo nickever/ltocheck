@@ -97,3 +97,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Google Docs
+client_secret.json
