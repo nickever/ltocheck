@@ -47,7 +47,13 @@ This tool can be used with either the GUI or CLI as preferred.
 
 To access the GUI, run $ ltocheck without args from terminal.
 
+![ltocheck1](https://github.com/nickever/ltocheck/blob/master/img/ltocheck1.png)
 
+![ltocheck2](https://github.com/nickever/ltocheck/blob/master/img/ltocheck2.png)
+
+![ltocheck3](https://github.com/nickever/ltocheck/blob/master/img/ltocheck3.png)
+
+![ltocheck4](https://github.com/nickever/ltocheck/blob/master/img/ltocheck4.png)
 
 ### CLI
 
