@@ -47,6 +47,8 @@ This tool can be used with either the GUI or CLI as preferred.
 
 To access the GUI, run $ ltocheck without args from terminal.
 
+
+
 ### CLI
 
 To access the CLI, run $ ltocheck with two required positional args, plus any optional args:
@@ -54,8 +56,6 @@ To access the CLI, run $ ltocheck with two required positional args, plus any op
 ```
 $ ltocheck -m [master_csv_path] -l [lto_csv_path] 
 ```
-
-Args:
 
 ```
 usage: ltocheck [-h] [-m MASTER_CSV_PATH] [-l LTO_CSV_PATH] [-d OUT_PATH]
