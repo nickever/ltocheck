@@ -34,7 +34,7 @@ def read(*filenames, **kwargs):
     return sep.join(buf)
 
 
-long_description = read('readme.md')
+long_description = read('README.md')
 
 setup(
     name='ltocheck',
