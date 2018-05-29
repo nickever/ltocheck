@@ -25,8 +25,12 @@ $ brew install python
 
 There are two methods to install this package. The simple method is to run the 'package_installer.sh' 
 file included in the package, which will check for and then if needed install Homebrew, Python3 and the ltocheck
-package. To execute the package installer use:
+package. To execute the package installer, first make it executable:
 
+```
+$ sudo chmod 755 /PATH/TO/package_installer.sh
+```
+Then run:
 ```
 $ /PATH/TO/package_installer.sh
 ```
