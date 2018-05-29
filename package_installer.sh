@@ -33,7 +33,7 @@ echo "ltocheck..."
 which -s /usr/local/bin/ltocheck
 if [[ $? != 0 ]] ; then
     echo "...installing"
-    pip3 install -e "${DIR}" || pip install -e "${DIR}"
+    sudo pip3 install -e "${DIR}" || sudo pip install -e "${DIR}"
 else
     echo "...already installed"
 fi
